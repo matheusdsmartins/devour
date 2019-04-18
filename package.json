@@ -39,6 +39,9 @@
     ]
   },
   "homepage": "https://github.com/twg/devour#readme",
+  "peerDependencies": {
+    "axios": ">= 0.18.0"
+  },
   "devDependencies": {
     "babel-cli": "^6.8.0",
     "babel-core": "^6.7.7",
@@ -51,7 +54,6 @@
     "standard": "^7.0.1"
   },
   "dependencies": {
-    "axios": "^0.16.2",
     "es6-promise": "^3.1.2",
     "lodash": "^4.11.2",
     "minilog": "^3.0.0",

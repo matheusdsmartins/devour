@@ -1,4 +1,3 @@
-const axios = require('axios')
 const pluralize = require('pluralize')
 // Import only what we use from lodash.
 const _isUndefined = require('lodash/isUndefined')
@@ -85,9 +84,8 @@ class JsonApi {
     this._originalMiddleware = middleware.slice(0)
     this.middleware = middleware.slice(0)
     this.headers = {}
-    this.axios = axios
+    this.axios = options.axiosInstance
     this.auth = options.auth
-    this.apiUrl = options.apiUrl
     this.models = {}
     this.deserialize = deserialize
     this.serialize = serialize
@@ -147,7 +145,7 @@ class JsonApi {
   buildUrl () {
     let path = this.buildPath()
     let slash = path !== '' && this.addSlash() ? '/' : ''
-    return `${this.apiUrl}/${path}${slash}`
+    return `/${path}${slash}`
   }
 
   get (params = {}) {
@@ -387,13 +385,13 @@ class JsonApi {
   collectionUrlFor (modelName) {
     let collectionPath = this.collectionPathFor(modelName)
     let trailingSlash = this.trailingSlash['collection'] ? '/' : ''
-    return `${this.apiUrl}/${collectionPath}${trailingSlash}`
+    return `/${collectionPath}${trailingSlash}`
   }
 
   resourceUrlFor (modelName, id) {
     let resourcePath = this.resourcePathFor(modelName, id)
     let trailingSlash = this.trailingSlash['resource'] ? '/' : ''
-    return `${this.apiUrl}/${resourcePath}${trailingSlash}`
+    return `/${resourcePath}${trailingSlash}`
   }
 
   urlFor (options = {}) {
@@ -414,6 +412,10 @@ class JsonApi {
     } else {
       return this.buildPath()
     }
+  }
+
+  addInterceptor (type, ...interceptors) {
+    this.axios.interceptors[type].use(...interceptors)
   }
 }
 
