@@ -148,12 +148,12 @@ class JsonApi {
     return `/${path}${slash}`
   }
 
-  get (params = {}) {
+  get (config = {}) {
     let req = {
       method: 'GET',
       url: this.urlFor(),
       data: {},
-      params
+      ...config
     }
 
     if (this.resetBuilderOnCall) {
@@ -163,7 +163,7 @@ class JsonApi {
     return this.runMiddleware(req)
   }
 
-  post (payload, params = {}, meta = {}) {
+  post (payload, config = {}, meta = {}) {
     let lastRequest = _last(this.builderStack)
 
     let req = {
@@ -171,7 +171,7 @@ class JsonApi {
       url: this.urlFor(),
       model: _get(lastRequest, 'model'),
       data: payload,
-      params,
+      ...config,
       meta
     }
 
@@ -182,7 +182,7 @@ class JsonApi {
     return this.runMiddleware(req)
   }
 
-  patch (payload, params = {}, meta = {}) {
+  patch (payload, config = {}, meta = {}) {
     let lastRequest = _last(this.builderStack)
 
     let req = {
@@ -190,7 +190,7 @@ class JsonApi {
       url: this.urlFor(),
       model: _get(lastRequest, 'model'),
       data: payload,
-      params,
+      ...config,
       meta
     }
 
@@ -201,7 +201,7 @@ class JsonApi {
     return this.runMiddleware(req)
   }
 
-  destroy () {
+  destroy (config = {}) {
     let req = null
 
     if (arguments.length >= 2) { // destroy (modelName, id, [payload], [meta])
@@ -212,7 +212,8 @@ class JsonApi {
       req = {
         method: 'DELETE',
         url: this.urlFor({model, id}),
-        model: model,
+        model,
+        ...config,
         data: data || {},
         meta: meta || {}
       }
@@ -223,6 +224,7 @@ class JsonApi {
       req = {
         method: 'DELETE',
         url: this.urlFor(),
+        ...config,
         model: _get(lastRequest, 'model'),
         data: arguments.length === 1 ? arguments[0] : {}
       }
@@ -313,53 +315,53 @@ class JsonApi {
       })
   }
 
-  request (url, method = 'GET', params = {}, data = {}) {
-    let req = { url, method, params, data }
+  request (url, method = 'GET', config = {}, data = {}) {
+    let req = { url, method, ...config, data }
     return this.runMiddleware(req)
   }
 
-  find (modelName, id, params = {}) {
+  find (modelName, id, config = {}) {
     let req = {
       method: 'GET',
-      url: this.urlFor({model: modelName, id: id}),
+      url: this.urlFor({ model: modelName, id: id }),
       model: modelName,
       data: {},
-      params: params
+      ...config
     }
     return this.runMiddleware(req)
   }
 
-  findAll (modelName, params = {}) {
+  findAll (modelName, config = {}) {
     let req = {
       method: 'GET',
-      url: this.urlFor({model: modelName}),
+      url: this.urlFor({ model: modelName }),
       model: modelName,
-      params: params,
+      ...config,
       data: {}
     }
     return this.runMiddleware(req)
   }
 
-  create (modelName, payload, params = {}, meta = {}) {
+  create (modelName, payload, config = {}, meta = {}) {
     let req = {
       method: 'POST',
       url: this.urlFor({model: modelName}),
       model: modelName,
-      params: params,
+      ...config,
       data: payload,
-      meta: meta
+      meta
     }
     return this.runMiddleware(req)
   }
 
-  update (modelName, payload, params = {}, meta = {}) {
+  update (modelName, payload, config = {}, meta = {}) {
     let req = {
       method: 'PATCH',
       url: this.urlFor({model: modelName, id: payload.id}),
       model: modelName,
       data: payload,
-      params: params,
-      meta: meta
+      ...config,
+      meta
     }
     return this.runMiddleware(req)
   }

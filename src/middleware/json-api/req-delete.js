@@ -3,6 +3,7 @@ module.exports = {
   req: (payload) => {
     if (payload.req.method === 'DELETE') {
       payload.req.headers = {
+        ...payload.req.headers,
         'Content-Type': 'application/vnd.api+json',
         'Accept': 'application/vnd.api+json'
       }
