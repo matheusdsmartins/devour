@@ -31,6 +31,7 @@ const Logger = require('./logger')
 const jsonApiHttpBasicAuthMiddleware = require('./middleware/json-api/req-http-basic-auth')
 const jsonApiPostMiddleware = require('./middleware/json-api/req-post')
 const jsonApiPatchMiddleware = require('./middleware/json-api/req-patch')
+const jsonApiPutMiddleware = require('./middleware/json-api/req-put')
 const jsonApiDeleteMiddleware = require('./middleware/json-api/req-delete')
 const jsonApiGetMiddleware = require('./middleware/json-api/req-get')
 const jsonApiHeadersMiddleware = require('./middleware/json-api/req-headers')
@@ -43,6 +44,7 @@ let jsonApiMiddleware = [
   jsonApiHttpBasicAuthMiddleware,
   jsonApiPostMiddleware,
   jsonApiPatchMiddleware,
+  jsonApiPutMiddleware,
   jsonApiDeleteMiddleware,
   jsonApiGetMiddleware,
   jsonApiHeadersMiddleware,
@@ -357,7 +359,19 @@ class JsonApi {
   update (modelName, payload, config = {}, meta = {}) {
     let req = {
       method: 'PATCH',
-      url: this.urlFor({model: modelName, id: payload.id}),
+      url: this.urlFor({ model: modelName, id: payload.id }),
+      model: modelName,
+      data: payload,
+      ...config,
+      meta
+    }
+    return this.runMiddleware(req)
+  }
+
+  put (modelName, payload, config = {}, meta = {}) {
+    let req = {
+      method: 'PUT',
+      url: this.urlFor({ model: modelName, id: payload.id }),
       model: modelName,
       data: payload,
       ...config,
@@ -379,9 +393,14 @@ class JsonApi {
     return `${collectionPath}`
   }
 
-  resourcePathFor (modelName, id) {
+  resourcePathFor (modelName, id) { 
     let collectionPath = this.collectionPathFor(modelName)
-    return `${collectionPath}/${encodeURIComponent(id)}`
+    let customPath = _get(this.models[modelName], 'options.templatePath')
+    const path = customPath
+      ? customPath.replace(':id', id)
+      : `${collectionPath}/${encodeURIComponent(id)}`
+
+    return path
   }
 
   collectionUrlFor (modelName) {
