@@ -203,6 +203,19 @@ class JsonApi {
     return this.runMiddleware(req)
   }
 
+  customRequest (method = 'GET', url = this.urlFor(), model, payload, config = {}, meta = {}) {
+    let req = {
+      method,
+      url,
+      model,
+      data: payload,
+      ...config,
+      meta
+    }
+
+    return this.runMiddleware(req)
+  }
+
   destroy (config = {}) {
     let req = null
 
