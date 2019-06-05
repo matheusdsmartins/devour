@@ -220,7 +220,7 @@ class JsonApi {
     let req = null
 
     if (arguments.length >= 2) { // destroy (modelName, id, [payload], [meta])
-      const [model, id, data, meta] = [...arguments]
+      const [model, id, data, reqConfig, meta] = [...arguments]
 
       console.assert(model, 'No model specified')
       console.assert(id, 'No ID specified')
@@ -228,7 +228,7 @@ class JsonApi {
         method: 'DELETE',
         url: this.urlFor({model, id}),
         model,
-        ...config,
+        ...reqConfig,
         data: data || {},
         meta: meta || {}
       }
